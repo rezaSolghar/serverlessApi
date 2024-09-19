@@ -26,7 +26,7 @@ custom:
 functions:
   #(1) Lambda function to initially fill DynamoDB
   FillDynamoDB:
-    handler: countries_loadData.fill
+    handler: endpoints/countries_loadData.fill
     description: fill DynamoDB table with set of countries.
     events:
       - http:
@@ -36,7 +36,7 @@ functions:
 
   #(2) Lambda function to list all the countries
   GetAllCountries:
-    handler: list-countries.list
+    handler: endpoints/list-countries.list
     description: get all the countries information.
     events:
       - http:
@@ -46,7 +46,7 @@ functions:
 
   #(3) Lambda function to get a country by name
   GetCountryByName:
-    handler: get-country-by-name.get
+    handler: endpoints/get-country-by-name.get
     description: get country By Name.
     events:
       - http:
@@ -56,7 +56,7 @@ functions:
 
   #(4) Lambda function to add a new country
   AddNewCountry:
-    handler: add-country.add
+    handler: endpoints/add-country.add
     description: add a new country.
     events:
       - http:
@@ -66,7 +66,7 @@ functions:
 
   #(5) Lambda function to delete a country
   deleteCountryByName:
-    handler: delete-country-by-name.delete
+    handler: endpoints/delete-country-by-name.delete
     description: delete a country by name
     events:
       - http:

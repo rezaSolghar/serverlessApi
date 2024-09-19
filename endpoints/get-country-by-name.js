@@ -1,4 +1,4 @@
-const Responses = require('../my-service/common/API_Responses');
+const Responses = require('../common/API_Responses');
 const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
