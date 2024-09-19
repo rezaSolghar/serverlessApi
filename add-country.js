@@ -1,19 +1,29 @@
 const Responses = require('../common/API_Responses');
-const Dynamo = require('../common/Dynamo');
-const tableName = process.env.tableName;
+const AWS = require('aws-sdk');
+const documentClient = new AWS.DynamoDB.DocumentClient();
+
+
 exports.add = async event => {
     console.log('event', event);
-    const user = JSON.parse(event.body);
-    if (user == null || !user.NAME || user.Code == null) {
+    const country = JSON.parse(event.body);
+    if (country == null || !country.NAME || country.Code == null) {
         // failed without an NAME
         return Responses._400({ message: 'missing the NAME from the path' });
     }
-    const newUser = await Dynamo.write(user, tableName).catch(err => {
-        console.log('error in dynamo write', err);
-        return null;
-    });
-    if (!newUser) {
-        return Responses._400({ message: 'Failed to write user by NAME' });
+    const params = {
+        TableName: process.env.tableName,
+        Item: {
+            "NAME": country.name,
+            "Code": country.code
+        }
+    };
+
+    try {
+        const newCountry = await documentClient.write(params).promise();
+        return Responses._200({ message: newCountry });
+    } catch (err) {
+        console.log('Error in DynamoDB write', err);
+        return Responses._500({ message: 'Failed to write country by NAME' });
     }
-    return Responses._200({ newUser });
+
 };

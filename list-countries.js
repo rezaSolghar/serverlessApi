@@ -1,6 +1,5 @@
-// const Responses = require('../common/API_Responses');
+
 const AWS = require('aws-sdk');
-const Dynamo = require('../common/Dynamo');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 const tableName = process.env.tableName;
 const params = {
