@@ -5,10 +5,9 @@ service: my-service
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs20.x
   stage: dev
   region: eu-central-1
-
 
 environment:
   tableName: ${self:custom.tableName}
@@ -17,58 +16,64 @@ iamRoleStatements:
   - Effect: Allow
     Action:
       - dynamodb:*
-      # - dynamodb:Query
-      # - dynamodb:Scan
-      # - dynamodb:GetItem
-      # - dynamodb:PutItem
     Resource: "*"
 # plugins:
 #   - serverless-plugin-scripts
 
 custom:
   tableName: countries
-  # scripts:
-  #     hooks:
-  #         'deploy:finalize': node lambdas//common//countries_loadData.js
-# As shown below, when the HTTP POST or GET request is made, the handler should be invoked.
 
 functions:
   #(1) Lambda function to initially fill DynamoDB
   FillDynamoDB:
-    handler: lambdas/common/countries_loadData.fill
+    handler: countries_loadData.fill
     description: fill DynamoDB table with set of countries.
     events:
       - http:
           path: fill-dynamoDB
           method: POST
           cors: true
+
   #(2) Lambda function to list all the countries
   GetAllCountries:
-    handler: lambdas/lambda-endpoints/list-countries.list
+    handler: list-countries.list
     description: get all the countries information.
     events:
       - http:
           path: list-countries
           method: GET
           cors: true
+
   #(3) Lambda function to get a country by name
   GetCountryByName:
-    handler: lambdas/lambda-endpoints/get-country-by-name.get
+    handler: get-country-by-name.get
     description: get country By Name.
     events:
       - http:
           path: get-country/{NAME}
           method: GET
           cors: true
+
   #(4) Lambda function to add a new country
   AddNewCountry:
-    handler: lambdas/lambda-endpoints/add-country.add
+    handler: add-country.add
     description: add a new country.
     events:
       - http:
           path: add-country
           method: POST
           cors: true
+
+  #(5) Lambda function to delete a country
+  deleteCountryByName:
+    handler: delete-country-by-name.delete
+    description: delete a country by name
+    events:
+      - http:
+          path: delete-country/{NAME}
+          method: DELETE
+          cors: true
+
 #Resources are AWS infrastructure components which your Functions use.
 #The Serverless Framework deploys an AWS components your Functions depend upon.
 
@@ -86,8 +91,3 @@ resources:
           - AttributeName: "NAME"
             KeyType: "HASH"
         BillingMode: PAY_PER_REQUEST
-    # test:
-    #  Type: AWS::CloudFormation::CustomResource
-    # #  DependOn: DynamoDBTable
-    #  Properties:
-    #    ServiceToken: arn:aws:lambda:us-east-2:944163165741:function:my-service-dev-FillDynamoDB
